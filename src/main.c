@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <getopt.h>
+#include <unistd.h>
 
 #include "tr4mpass.h"
 #include "device/device.h"
@@ -140,6 +141,8 @@ static int detect_device(device_info_t *dev)
     have_irecv_info = (usb_dfu_read_info_irecovery(&irecv_cpid, &irecv_ecid,
                                                    irecv_serial,
                                                    sizeof(irecv_serial)) == 0);
+    if (have_irecv_info)
+        usleep(500000);
 
     if (usb_dfu_find(&usb_handle) == 0) {
         log_info("Device found in DFU mode");

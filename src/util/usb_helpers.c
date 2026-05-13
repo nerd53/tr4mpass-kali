@@ -23,6 +23,27 @@ static int is_transient_usb_error(int err)
             err == LIBUSB_ERROR_IO);
 }
 
+int usb_is_disconnect_error(int libusb_error)
+{
+    return (libusb_error == LIBUSB_ERROR_NO_DEVICE);
+}
+
+int usb_ctrl_transfer_raw(libusb_device_handle *dev,
+                          uint8_t bmRequestType,
+                          uint8_t bRequest,
+                          uint16_t wValue,
+                          uint16_t wIndex,
+                          unsigned char *data,
+                          uint16_t wLength,
+                          unsigned int timeout)
+{
+    if (!dev)
+        return LIBUSB_ERROR_INVALID_PARAM;
+
+    return libusb_control_transfer(dev, bmRequestType, bRequest,
+                                   wValue, wIndex, data, wLength, timeout);
+}
+
 int usb_ctrl_transfer(libusb_device_handle *dev,
                       uint8_t bmRequestType,
                       uint8_t bRequest,
@@ -57,6 +78,23 @@ int usb_ctrl_transfer(libusb_device_handle *dev,
     }
 
     return ret;
+}
+
+int usb_ctrl_transfer_no_data_raw(libusb_device_handle *dev,
+                                  uint8_t bmRequestType,
+                                  uint8_t bRequest,
+                                  uint16_t wValue,
+                                  uint16_t wIndex,
+                                  unsigned int timeout)
+{
+    int ret;
+
+    if (!dev)
+        return LIBUSB_ERROR_INVALID_PARAM;
+
+    ret = libusb_control_transfer(dev, bmRequestType, bRequest,
+                                  wValue, wIndex, NULL, 0, timeout);
+    return (ret >= 0) ? 0 : ret;
 }
 
 int usb_ctrl_transfer_no_data(libusb_device_handle *dev,

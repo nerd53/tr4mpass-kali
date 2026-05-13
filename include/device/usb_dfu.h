@@ -77,4 +77,11 @@ int usb_dfu_recv(libusb_device_handle *handle, void *buf, size_t len,
  */
 void usb_dfu_close(libusb_device_handle *handle);
 
+/*
+ * Read the DFU serial descriptor directly via libusb without fallback or
+ * synthetic identity. Used to verify live device state such as PWND markers.
+ */
+int usb_dfu_read_serial_raw(libusb_device_handle *handle,
+                            char *serial, size_t serial_len);
+
 #endif /* USB_DFU_H */

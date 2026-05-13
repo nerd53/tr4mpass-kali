@@ -116,8 +116,12 @@ int usb_dfu_find(libusb_device_handle **handle)
 
     /* Claim interface 0 (DFU interface) */
     int ret = libusb_claim_interface(*handle, 0);
-    if (ret != LIBUSB_SUCCESS)
-        log_warn("failed to claim interface 0: %s (continuing anyway)", libusb_strerror(ret));
+    if (ret != LIBUSB_SUCCESS) {
+        log_error("failed to claim DFU interface 0: %s", libusb_strerror(ret));
+        libusb_close(*handle);
+        *handle = NULL;
+        return -1;
+    }
 
     return 0;
 }
@@ -320,6 +324,33 @@ int usb_dfu_read_info(libusb_device_handle *handle, uint32_t *cpid,
                  ecid ? *ecid : 0x001559aa30bae826ULL);
     }
 
+    return 0;
+}
+
+int usb_dfu_read_serial_raw(libusb_device_handle *handle,
+                            char *serial, size_t serial_len)
+{
+    unsigned char buf[DFU_SERIAL_MAX];
+    int ret;
+
+    if (!handle || !serial || serial_len == 0)
+        return -1;
+
+    serial[0] = '\0';
+
+    ret = libusb_get_string_descriptor_ascii(handle, DFU_SERIAL_INDEX,
+                                             buf, sizeof(buf));
+    if (ret < 0) {
+        log_error("raw DFU serial read failed: %s", libusb_strerror(ret));
+        return -1;
+    }
+
+    if (ret >= (int)sizeof(buf))
+        ret = (int)sizeof(buf) - 1;
+    buf[ret] = '\0';
+
+    strncpy(serial, (char *)buf, serial_len - 1);
+    serial[serial_len - 1] = '\0';
     return 0;
 }
 
