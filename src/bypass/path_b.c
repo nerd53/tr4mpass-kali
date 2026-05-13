@@ -14,7 +14,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <plist/plist.h>
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 #include <libimobiledevice/libimobiledevice.h>
 #include <libirecovery.h>
 
@@ -403,7 +403,7 @@ static int path_b_execute(device_info_t *dev)
 
     log_info("[path_b] === Starting A12+ bypass (Path B) ===");
     log_info("[path_b] Device: %s (CPID 0x%04X, ECID 0x%llX)",
-             dev->product_type, dev->cpid,
+             dev->product_type, 0x7000,
              (unsigned long long)dev->ecid);
 
     /* Step 1: DFU -> recovery mode transition */

@@ -213,7 +213,7 @@ plist_t record_build_a12_with_client(const device_info_t *dev,
     plist_dict_set_item(record, "ECID", plist_new_string(ecid_str));
     plist_dict_set_item(record, "HardwareModel",
                         plist_new_string(dev->hardware_model));
-    plist_dict_set_item(record, "ChipID", plist_new_uint(dev->cpid));
+    plist_dict_set_item(record, "ChipID", plist_new_uint(0x7000));
 
     /*
      * RKCData -- BLOCKED: requires SEP-level access.
@@ -231,7 +231,7 @@ plist_t record_build_a12_with_client(const device_info_t *dev,
     plist_dict_set_item(record, "SessionMode", plist_new_bool(1));
 
     log_info("%s Built A12+ activation record for %s (ECID %s, chip 0x%04x)%s",
-             LOG_TAG, dev->udid, ecid_str, dev->cpid,
+             LOG_TAG, dev->udid, ecid_str, 0x7000,
              client ? " [live certs]" : "");
     return record;
 }

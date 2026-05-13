@@ -158,7 +158,7 @@ static const chip_info_t g_chip_table[] = {
     {
         .cpid = 0x7000,
         .name = "A8",
-        .marketing = "iPod touch 6G / iPad mini 4",
+        .marketing = "iPhone 6 / iPhone 6 Plus / iPod touch 6G / iPad mini 4",
         .checkm8_vulnerable = 1,
         .config_overwrite_pad = 0x500,
         .insecure_memory_base = 0x180380000,

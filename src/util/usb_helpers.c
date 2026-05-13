@@ -2,7 +2,7 @@
 #include <unistd.h>
 #include "util/usb_helpers.h"
 
-/* Maximum retry attempts for transient USB errors (PIPE/STALL) */
+/* Maximum retry attempts for transient USB errors (PIPE/STALL/TIMEOUT/IO) */
 #define USB_PIPE_MAX_RETRIES  3
 
 /* Delay between retries in microseconds (50ms) */
@@ -13,10 +13,14 @@
  * represents a transient condition that may succeed on retry.
  * LIBUSB_ERROR_PIPE (-9) means the device STALLed the endpoint,
  * which is common during DFU operations and often clears on retry.
+ * On macOS, SecureROM DFU can also surface short reset/stall windows as
+ * LIBUSB_ERROR_IO while the device is briefly not answering.
  */
 static int is_transient_usb_error(int err)
 {
-    return (err == LIBUSB_ERROR_PIPE || err == LIBUSB_ERROR_TIMEOUT);
+    return (err == LIBUSB_ERROR_PIPE ||
+            err == LIBUSB_ERROR_TIMEOUT ||
+            err == LIBUSB_ERROR_IO);
 }
 
 int usb_ctrl_transfer(libusb_device_handle *dev,

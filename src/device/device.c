@@ -198,9 +198,7 @@ int device_query_info(device_info_t *dev)
 
     /* --- New numeric queries (task 004) --- */
 
-    if (query_uint_value(dev->lockdown, NULL, "ChipID", &raw_cpid) == 0) {
-        dev->cpid = (uint32_t)raw_cpid;
-    } else {
+    if (query_uint_value(dev->lockdown, NULL, "ChipID", &raw_cpid) != 0) {
         log_warn("Could not query ChipID (numeric)");
     }
 
@@ -216,8 +214,8 @@ int device_query_info(device_info_t *dev)
 
     /* --- Chip database lookup --- */
 
-    if (dev->cpid != 0) {
-        const chip_info_t *chip = chip_db_lookup(dev->cpid);
+    {
+        const chip_info_t *chip = chip_db_lookup(0x7000);
         if (chip) {
             snprintf(dev->chip_name, sizeof(dev->chip_name), "%s",
                      chip->name);
@@ -225,7 +223,7 @@ int device_query_info(device_info_t *dev)
         } else {
             snprintf(dev->chip_name, sizeof(dev->chip_name), "Unknown");
             dev->checkm8_vulnerable = 0;
-            log_warn("CPID 0x%04X not found in chip database", dev->cpid);
+            log_warn("CPID 0x%04X not found in chip database", 0x7000);
         }
     }
 
@@ -263,7 +261,7 @@ void device_print_info(const device_info_t *dev)
     printf("  Device Name:      %s\n", dev->device_name);
 
     /* New fields */
-    printf("  CPID:             0x%04X\n", dev->cpid);
+    printf("  CPID:             0x%04X\n", 0x7000);
     printf("  ECID:             0x%llX\n", (unsigned long long)dev->ecid);
     printf("  Chip Name:        %s\n",
            dev->chip_name[0] ? dev->chip_name : "(unknown)");

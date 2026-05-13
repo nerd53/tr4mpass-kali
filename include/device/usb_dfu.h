@@ -3,7 +3,7 @@
 
 #include <stddef.h>
 #include <stdint.h>
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 
 /* Apple USB identifiers */
 #define APPLE_VID       0x05AC
@@ -50,6 +50,13 @@ int usb_dfu_find(libusb_device_handle **handle);
  */
 int usb_dfu_read_info(libusb_device_handle *handle, uint32_t *cpid,
                       uint64_t *ecid, char *serial, size_t serial_len);
+
+/*
+ * Read DFU identity via libirecovery, similar to sshrd-style tooling.
+ * This does not keep the iRecovery client open; callers can open libusb after.
+ */
+int usb_dfu_read_info_irecovery(uint32_t *cpid, uint64_t *ecid,
+                                char *serial, size_t serial_len);
 
 /*
  * Send data to the DFU device via control transfer (DFU_DNLOAD).

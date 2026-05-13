@@ -11,7 +11,7 @@
 #include <stdint.h>
 #include <libimobiledevice/libimobiledevice.h>
 #include <libimobiledevice/lockdown.h>
-#include <libusb-1.0/libusb.h>
+#include <libusb.h>
 
 #define DEVICE_FIELD_LEN 128
 #define DEVICE_UDID_LEN  64
