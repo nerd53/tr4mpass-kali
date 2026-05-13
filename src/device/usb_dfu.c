@@ -189,9 +189,9 @@ int usb_dfu_read_info_irecovery(uint32_t *cpid, uint64_t *ecid,
         return -1;
     }
 
-    if (cpid && info->have_cpid)
+    if (cpid && info->cpid != 0)
         *cpid = info->cpid;
-    if (ecid && info->have_ecid)
+    if (ecid && info->ecid != 0)
         *ecid = info->ecid;
 
     if (serial && serial_len > 0) {
@@ -207,13 +207,13 @@ int usb_dfu_read_info_irecovery(uint32_t *cpid, uint64_t *ecid,
                              "CPID:%04x CPRV:%02x BDID:%02x ECID:%016" PRIx64
                              " CPFM:%02x SCEP:%02x IBFL:%02x SRTG:%s SRNM:%s"
                              " IMEI:%s NONC:%s SNON:%s",
-                             info->have_cpid ? info->cpid : 0,
-                             info->have_cprv ? info->cprv : 0,
-                             info->have_bdid ? info->bdid : 0,
-                             info->have_ecid ? info->ecid : 0,
-                             info->have_cpfm ? info->cpfm : 0,
-                             info->have_scep ? info->scep : 0,
-                             info->have_ibfl ? info->ibfl : 0,
+                             info->cpid,
+                             info->cprv,
+                             info->bdid,
+                             info->ecid,
+                             info->cpfm,
+                             info->scep,
+                             info->ibfl,
                              info->srtg ? info->srtg : "N/A",
                              info->srnm ? info->srnm : "N/A",
                              info->imei ? info->imei : "N/A",
