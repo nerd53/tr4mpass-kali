@@ -45,6 +45,10 @@
 #define RECONNECT_POLL_USEC     500000  /* 0.5 s */
 #define POST_CLOSE_USEC         200000  /* 0.2 s */
 
+#ifndef IRECV_SEND_OPT_DFU_NOTIFY_FINISH
+#define IRECV_SEND_OPT_DFU_NOTIFY_FINISH (1 << 0)
+#endif
+
 /* ------------------------------------------------------------------ */
 /* Environment helpers                                                */
 /* ------------------------------------------------------------------ */
