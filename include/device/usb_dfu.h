@@ -35,6 +35,11 @@ int usb_dfu_init(void);
 void usb_dfu_cleanup(void);
 
 /*
+ * Return the libusb context used by the DFU layer.
+ */
+libusb_context *usb_dfu_context(void);
+
+/*
  * Find an Apple device in DFU mode (VID=0x05AC, PID=0x1227).
  * On success, *handle is set to an opened device handle and 0 is returned.
  * On failure, *handle is set to NULL and -1 is returned.

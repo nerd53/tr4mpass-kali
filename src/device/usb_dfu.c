@@ -60,6 +60,11 @@ void usb_dfu_cleanup(void)
     }
 }
 
+libusb_context *usb_dfu_context(void)
+{
+    return g_ctx;
+}
+
 int usb_dfu_find(libusb_device_handle **handle)
 {
     libusb_device **devs = NULL;
