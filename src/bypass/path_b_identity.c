@@ -185,7 +185,6 @@ int path_b_write_serial_irecovery(device_info_t *dev, const char *new_serial)
 {
     irecv_client_t client = NULL;
     irecv_error_t  err;
-    const struct irecv_device_info *info;
     char           cmd[DFU_SERIAL_MAX + 32];
     int            rc = -1;
 
@@ -204,15 +203,6 @@ int path_b_write_serial_irecovery(device_info_t *dev, const char *new_serial)
     if (err != IRECV_E_SUCCESS || !client) {
         log_error("[path_b_id] Could not open device in recovery mode: %s",
                   irecv_strerror(err));
-        return -1;
-    }
-
-    /* Verify the device is actually in recovery (not DFU or normal) */
-    info = irecv_get_device_info(client);
-    if (!info || info->pid != APPLE_RECOVERY_PID) {
-        log_error("[path_b_id] Device is not in recovery mode (pid=0x%04X)",
-                  info ? (unsigned)info->pid : 0);
-        irecv_close(client);
         return -1;
     }
 
