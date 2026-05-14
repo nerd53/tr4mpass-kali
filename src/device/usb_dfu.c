@@ -21,7 +21,7 @@
 #define DFU_MAX_TRANSFER 0x800
 
 /* Serial string descriptor index for Apple DFU devices */
-#define DFU_SERIAL_INDEX 3
+// #define DFU_SERIAL_INDEX 3
 
 /* Hardcoded DFU identity for the target iPhone 6 Plus (iPhone7,1 / n56ap). */
 #define HARDCODED_DFU_SERIAL \
@@ -32,6 +32,34 @@
 
 /* Module-global libusb context */
 static libusb_context *g_ctx = NULL;
+
+static int usb_dfu_get_serial_index(libusb_device_handle *handle)
+{
+    libusb_device *dev;
+    struct libusb_device_descriptor desc;
+    int ret;
+
+    if (!handle)
+        return -1;
+
+    dev = libusb_get_device(handle);
+    if (!dev)
+        return -1;
+
+    ret = libusb_get_device_descriptor(dev, &desc);
+    if (ret != LIBUSB_SUCCESS)
+        return -1;
+
+    log_warn("USB string indexes: iManufacturer=%u iProduct=%u iSerialNumber=%u",
+             desc.iManufacturer,
+             desc.iProduct,
+             desc.iSerialNumber);
+
+    if (desc.iSerialNumber == 0)
+        return -1;
+
+    return desc.iSerialNumber;
+}
 
 int usb_dfu_init(void)
 {
@@ -257,8 +285,14 @@ int usb_dfu_read_info(libusb_device_handle *handle, uint32_t *cpid,
     {
         int attempt;
         for (attempt = 0; attempt < 3; attempt++) {
-            ret = libusb_get_string_descriptor_ascii(handle, DFU_SERIAL_INDEX,
-                                                     buf, sizeof(buf));
+           int serial_index = usb_dfu_get_serial_index(handle);
+        if (serial_index < 0) {
+            log_error("could not get USB iSerialNumber index");
+            return -1;
+        }
+
+        ret = libusb_get_string_descriptor_ascii(handle, serial_index,
+                                                buf, sizeof(buf));
             if (ret >= 0)
                 break;
             if (ret != LIBUSB_ERROR_PIPE && ret != LIBUSB_ERROR_TIMEOUT)
@@ -343,8 +377,14 @@ int usb_dfu_read_serial_raw(libusb_device_handle *handle,
 
     serial[0] = '\0';
 
-    ret = libusb_get_string_descriptor_ascii(handle, DFU_SERIAL_INDEX,
-                                             buf, sizeof(buf));
+    int serial_index = usb_dfu_get_serial_index(handle);
+    if (serial_index < 0) {
+        log_error("could not get USB iSerialNumber index");
+        return -1;
+    }
+
+    ret = libusb_get_string_descriptor_ascii(handle, serial_index,
+                                            buf, sizeof(buf));
     if (ret < 0) {
         log_error("raw DFU serial read failed: %s", libusb_strerror(ret));
         return -1;
